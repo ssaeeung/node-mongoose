@@ -12,19 +12,34 @@ connect.then((db) => {
     Dishes.create({
         name: 'TonyPizza',
         description: 'test'
-    })    
-        .then((dish) => {
-            console.log('dish',dish)
-            return Dishes.find({}).exec();
+    })
+    .then((dish) => {
+        console.log('dish', dish)
+        return Dishes.findByIdAndUpdate(dish._id, {
+            $set: {description: 'Updated test'},
+        }, { 
+            new: true
+        }).exec();
+    })
+    .then((dish) => {
+        console.log('dish=', dish)
+
+        dish.comments.push({
+            rating: 5,
+            comment: 'I\'m getiing a sinking feeling!',
+            author: 'Angie'
         })
-        .then((dishes) => {
-            console.log('dishes=', dishes)
-            return Dishes.deleteMany({})
-        })
-        .then(() => {
-            return mongoose.connection.close();
-        })
-        .catch((err) => {
-            console.log('error=',err)
-        })
+        return dish.save()
+    })
+    .then((dish) => {
+        console.log(dish);
+
+        return Dishes.remove({});
+    })
+    .then(() => {
+        return mongoose.connection.close();
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 });
